@@ -1,33 +1,27 @@
---[[
-    
-'I am an artist and this is my canvas.'
-- BY ME
-
-]]
-
+-- LIBRARIES
 local push = require 'push' -- Push library 
 
 -- Game values
-local WINDOW_HEIGHT, WINDOW_WIDTH = 600, 600
-local game_width, game_height = 300, 300
-local turn = 1
+local WINDOW_HEIGHT, WINDOW_WIDTH = love.window.getMode()
+local game_width, game_height = 432, 243
+local turn = 0
 local num = ''
 local game_start = false
 
 function love.load()
     -- Window
     love.graphics.setDefaultFilter('nearest', 'nearest') -- Makes the text not blurry (fixed a little bit)
-    push:setupScreen(game_width, game_height, WINDOW_WIDTH, WINDOW_HEIGHT, {
+    push:setupScreen(game_width, game_height, WINDOW_WIDTH, WINDOW_HEIGHT / 2, {
         fullscreen = false,
         vsync = true,
-        resizable = false,
-        upscale = 'normal'
+        resizable = false
     })
 
     -- Player vars
     
     board = {
         player_one, player_two = false, false, -- Game state deciding who's turn is it
+        player_one_win, player_two_win = false, false, -- Whoever wins
         --[[
         Explanation: A 3x3 Grid will be used for determining player input for the X and the O which will house the state of:
             empty - the player CAN place their shape there
@@ -49,13 +43,12 @@ function love.load()
     }
 end
 
+
 function love.keypressed(key)
     if turn % 2 == 0 then
-        player_one = false
-        player_two = true
-    else
-        player_one = true
-        player_two = false
+        player_one, player_two = true, false
+    elseif turn % 2 == 1 then
+        player_one, player_two = false, true 
     end
 
     --[[
@@ -111,21 +104,41 @@ end
 
 function love.draw()
     push:start()
+
+    -- BG color
+    love.graphics.clear(45/225, 50/225, 20/255, 1)
+
+    -- Game state text
     if not game_start then
-        love.graphics.print('Press "ENTER" To start', game_width/2 - 65, game_height/2)
+        love.graphics.print('Press "ENTER" To start', game_width/2 - 70, game_height/2)
     else
         -- Drawing stuff
         love.graphics.printf('Press "esc" or "x" to exit.', 0, 0, game_width/2, 'left')
-        if player_one == true then
+        if turn == 0 then
             love.graphics.printf('Player one turn', 0, 30, game_width/2, 'left')
-        elseif player_two == true then
-            love.graphics.printf('Player two turn', 0, 30, game_width/2, 'left')
         end
 
-        -- Classic Text Debugging
-        love.graphics.printf(turn, 0, 45, game_width/2, 'left')
-        love.graphics.printf(num, 0, game_height/2 - 6, game_width/2, 'center')
-    end
+        if turn > 0 and turn < 10 then
+            -- Classic Text Debugging
+            love.graphics.printf("Turn: ", 0, 45, game_width/2, 'left')
+            love.graphics.printf(turn, 35, 45, game_width/2, 'left')
+            love.graphics.printf(num, 0, game_height/2 - 6, game_width/2, 'center')
+            if player_one == true then
+                love.graphics.printf('Player two turn', 0, 30, game_width/2, 'left')
+            elseif player_two == true then
+                love.graphics.printf('Player one turn', 0, 30, game_width/2, 'left')
+            end
+        end
         
+        -- In the case of player one or two winning OR a tie
+        if player_one_win == true then
+            love.graphics.printf("PLAYER ONE WIN!", 100, game_width/2 - 100, game_width/2, 'center')
+        elseif player_two_win == true then
+            love.graphics.printf("PLAYER TWO WIN!", 100, game_width/2 - 100, game_width/2, 'center')
+        elseif turn > 9 then
+            love.graphics.printf("TIE!", 100, game_width/2 - 100, game_width/2, 'center')
+        end
+    end
+
     push:finish()
 end
