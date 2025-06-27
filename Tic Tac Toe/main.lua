@@ -61,6 +61,20 @@ function love.keypressed(key)
     if key == 'return' then
         game_start = true
     end
+    if key == 'r' then
+        board["top_left"] = 'empty'
+        board["top"] = 'empty'
+        board["top_right"] = 'empty'
+        board["left"] = 'empty'
+        board["middle"] = 'empty'
+        board["right"] = 'empty'
+        board["bottom_left"] = 'empty'
+        board["bottom"] = 'empty'
+        board["bottom_right"] = 'empty'
+        player_one_win = false
+        player_two_win = false
+        tie = false
+    end
 
     --[[
     
@@ -162,7 +176,46 @@ end
 
 -- CHECK IF PLAYER HAS WON
 function love.update(dt)
-    -- BRUTEFORCE CHECKING O(n^2) idk
+    -- PLAYER ONE CHECK
+    if board["top_left"] == 'x' and board["top"] == 'x' and board["top_right"] == 'x' then
+        player_one_win = true
+    elseif board["left"] == 'x' and board["middle"] == 'x' and board["right"] == 'x' then
+        player_one_win = true
+    elseif board["bottom_left"] == 'x' and board["bottom"] == 'x' and board["bottom_right"] == 'x' then
+        player_one_win = true
+    elseif board["top_left"] == 'x' and board["left"] == 'x' and board["bottom_left"] == 'x' then
+        player_one_win = true
+    elseif board["top"] == 'x' and board["middle"] == 'x' and board["bottom"] == 'x' then
+        player_one_win = true
+    elseif board["top_right"] == 'x' and board["right"] == 'x' and board["bottom_right"] == 'x' then
+        player_one_win = true
+    elseif board["top_left"] == 'x' and board["middle"] == 'x' and board["bottom_right"] == 'x' then
+        player_one_win = true
+    elseif board["top_right"] == 'x' and board["middle"] == 'x' and board["bottom_left"] == 'x' then
+        player_one_win = true
+    end
+
+    -- PLAYER TWO CHECK
+    if board["top_left"] == 'o' and board["top"] == 'o' and board["top_right"] == 'o' then
+        player_two_win = true
+    elseif board["left"] == 'o' and board["middle"] == 'o' and board["right"] == 'o' then
+        player_two_win = true
+    elseif board["bottom_left"] == 'o' and board["bottom"] == 'o' and board["bottom_right"] == 'o' then
+        player_two_win = true
+    elseif board["top_left"] == 'o' and board["left"] == 'o' and board["bottom_left"] == 'o' then
+        player_two_win = true
+    elseif board["top"] == 'o' and board["middle"] == 'o' and board["bottom"] == 'o' then
+        player_two_win = true
+    elseif board["top_right"] == 'o' and board["right"] == 'o' and board["bottom_right"] == 'o' then
+        player_two_win = true
+    elseif board["top_left"] == 'o' and board["middle"] == 'o' and board["bottom_right"] == 'o' then
+        player_two_win = true
+    elseif board["top_right"] == 'o' and board["middle"] == 'o' and board["bottom_left"] == 'o' then
+        player_two_win = true
+    end
+    if turn == 9 and player_one_win ~= true and player_two_win ~= true then
+        tie = true
+    end
 end
 
 function love.draw()
@@ -195,12 +248,12 @@ function love.draw()
 
 
         -- Drawing stuff
-        love.graphics.printf('Press "esc" or "x" to exit.', 0, 0, game_width/2, 'left')
+        love.graphics.printf('Press "esc" or "x" to exit or "r" to restart.', 0, 0, game_width/2, 'left')
         if turn == 0 then
             love.graphics.printf('Player one turn', 0, 30, game_width/2, 'left')
         end
 
-        if turn > 0 and turn < 10 then
+        if turn > 0 then
             -- Classic Text Debugging
             love.graphics.printf("Turn: ", 0, 45, game_width/2, 'left')
             love.graphics.printf(turn, 35, 45, game_width/2, 'left')
@@ -213,11 +266,11 @@ function love.draw()
         
         -- In the case of player one or two winning OR a tie
         if player_one_win == true then
-            love.graphics.printf("PLAYER ONE WIN!", 100, game_width/2 - 100, game_width/2, 'center')
+            love.graphics.print("PLAYER ONE WIN!", 170, 30)
         elseif player_two_win == true then
-            love.graphics.printf("PLAYER TWO WIN!", 100, game_width/2 - 100, game_width/2, 'center')
+            love.graphics.print("PLAYER TWO WIN!", 190, 30)
         elseif tie == true then
-            love.graphics.printf("TIE!", 100, game_width/2 - 100, game_width/2, 'center')
+            love.graphics.print("TIE!", 190, 30)
         end
     end
 
